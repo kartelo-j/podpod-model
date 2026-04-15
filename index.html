@@ -239,7 +239,8 @@ function g(id){return+document.getElementById(id).value}
 function fm(n){
   if(n===0)return'¥0';
   const a=Math.abs(n),s=n<0?'-¥':'¥';
-  return a>=10000?s+(a/10000).toFixed(1)+'万':s+Math.round(a).toLocaleString();
+  if(a>=10000)return s+(a/10000).toFixed(2)+'万';
+  return s+a.toLocaleString('zh-CN',{maximumFractionDigits:2,minimumFractionDigits:a%1!==0?2:0});
 }
 function fv(el,n){el.textContent=fm(n);if(n<0)el.classList.add('neg');else el.classList.remove('neg');}
 function setTab(t,btn){
