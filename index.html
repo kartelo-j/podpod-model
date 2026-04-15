@@ -296,11 +296,13 @@ function getSnap(){
   const s={};
   ['visitors','engage','conv','checkins','aov','cogs','aicost','marketing','opscost','podpct','dipct','opspct','mprice','mcount','deposit','runmonths','losslimit'].forEach(k=>s[k]=g('s-'+k));
   s.tiers=JSON.parse(JSON.stringify(tiers));
+  s.tab=tab;
   return s;
 }
 function applySnap(snap){
   for(let k in snap){
     if(k==='tiers'){tiers=JSON.parse(JSON.stringify(snap.tiers));renderTiers();}
+    else if(k==='tab'){tab=snap.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const tel=document.getElementById('tab-'+tab);if(tel)tel.classList.add('active');}
     else{const el=document.getElementById('s-'+k);if(el)el.value=snap[k];}
   }
   document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
@@ -334,6 +336,7 @@ function renderHist(){
         <span class="hist-tag">转化${s.conv}%</span>
         <span class="hist-tag">客单价¥${s.aov}</span>
         <span class="hist-tag">季GMV ${fm(qGmv)}</span>
+        <span class="hist-tag">阶梯${(s.tiers||[]).length}档</span>
       </div>
       <div class="hist-actions">
         <button class="hist-restore" onclick="applySnap(JSON.parse('${JSON.stringify(h.snap).replace(/'/g,"\\'")}'))">恢复此方案</button>
