@@ -74,6 +74,10 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 .hist-restore:hover{background:#7C5CFC;color:#fff}
 .hist-del{font-size:12px;padding:6px 10px;border-radius:8px;border:1.5px solid #ddd;color:#aaa;background:#fff;cursor:pointer}
 .hist-del:hover{border-color:#E24B4A;color:#E24B4A}
+.ca-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#F9F8F5;border-radius:8px;font-size:12.5px}
+.ca-name{flex:1;color:#555}
+.ca-btn{padding:5px 14px;border-radius:7px;border:1.5px solid #ddd;background:#fff;color:#888;font-size:12px;cursor:pointer;transition:all .15s}
+.ca-btn.active{background:#7C5CFC;border-color:#7C5CFC;color:#fff;font-weight:600}
 .neg{color:#E24B4A}
 @media print{
   body{background:#fff;padding:12px}
@@ -94,6 +98,10 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <button class="tab-btn" id="mode-di" onclick="setMode('di')">地推自有</button>
 </div>
 
+<div style="display:grid;gap:8px;margin-bottom:16px" id="cost-alloc-box">
+<div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:2px">费用归属</div>
+</div>
+
 <p class="sec">流量预估</p>
 <div class="card">
 <div class="sl-row"><span class="sl-label">日均人流量</span><input type="range" id="s-visitors" min="0" max="20000" step="100" value="3000" oninput="upd()"><span class="sl-val" id="v-visitors">3,000</span></div>
@@ -102,6 +110,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="sl-row"><span class="sl-label">人均生图次数</span><input type="range" id="s-checkins" min="1" max="15" step="0.5" value="3" oninput="upd()"><span class="sl-val" id="v-checkins">3次</span></div>
 <div class="sl-row"><span class="sl-label">客单价</span><input type="range" id="s-aov" min="0" max="500" step="1" value="59" oninput="upd()"><span class="sl-val" id="v-aov">¥59</span></div>
 <div class="sl-row"><span class="sl-label">商品成本率</span><input type="range" id="s-cogs" min="0" max="100" step="1" value="22" oninput="upd()"><span class="sl-val" id="v-cogs">22%</span></div>
+<div class="sl-row"><span class="sl-label">快递费/件</span><input type="range" id="s-express" min="0" max="5" step="0.1" value="0.2" oninput="upd()"><span class="sl-val" id="v-express">¥0.2</span></div>
 <div class="sl-row"><span class="sl-label">单次生图AI成本</span><input type="range" id="s-aicost" min="0" max="5" step="0.1" value="0.5" oninput="upd()"><span class="sl-val" id="v-aicost">¥0.5</span></div>
 </div>
 
@@ -128,6 +137,8 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 
 <p class="sec">机器与投资</p>
 <div class="card">
+<div class="sl-row"><span class="sl-label">POSM费用（一次性）</span><input type="range" id="s-posm" min="0" max="20000" step="500" value="5000" oninput="upd()"><span class="sl-val" id="v-posm">¥5,000</span></div>
+<div class="sl-row"><span class="sl-label">首批材料费用（一次性）</span><input type="range" id="s-material" min="0" max="5000" step="100" value="700" oninput="upd()"><span class="sl-val" id="v-material">¥700</span></div>
 <div class="sl-row"><span class="sl-label">PODPOD机器单价</span><input type="range" id="s-mprice" min="10000" max="100000" step="5000" value="30000" oninput="upd()"><span class="sl-val" id="v-mprice">¥30,000</span></div><div style="font-size:10.5px;color:#aaa;margin:-4px 0 8px 180px">（含初装费、运输费、首批耗材）</div>
 <div class="sl-row"><span class="sl-label">机器费用承担方</span><span class="sl-val" id="v-mach-payer" style="font-weight:600">PODPOD</span></div>
 <div class="sl-row"><span class="sl-label">持有机器数量</span><input type="range" id="s-mcount" min="1" max="20" step="1" value="1" oninput="upd()"><span class="sl-val" id="v-mcount">1台</span></div>
@@ -169,6 +180,8 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="fin-row"><span id="lbl-sm-gmv">季度GMV</span><span class="fin-val" id="r-sm-gmv">—</span></div>
 <div class="fin-row"><span id="lbl-sm-div">地推分成(40%)</span><span class="fin-val" id="r-sm-div">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担部分）</span><span class="fin-val" id="r-sm-tier">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：快递费</span><span class="fin-val" id="r-sm-express">—</span></div>
+<div id="r-sm-cost-rows"></div>
 <div class="fin-row" style="font-size:15px"><span id="lbl-sm-net">= 季度净利润</span><span class="fin-val" id="r-sm-net">—</span></div>
 <div class="fin-row"><span id="lbl-sm-rate">季净利率</span><span class="fin-val" id="r-sm-rate">—</span></div>
 <div class="fin-row"><span id="lbl-sm-yr">年化净利润</span><span class="fin-val" id="r-sm-yr">—</span></div>
@@ -194,10 +207,9 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="card">
 <div class="fin-row"><span>季度GMV</span><span class="fin-val" id="r-pod-gmv">—</span></div>
 <div class="fin-row"><span>PODPOD 分成</span><span class="fin-val" id="r-pod-div">—</span></div>
+<div id="r-pod-cost-rows"></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val" id="r-pod-cogs">—</span></div>
 <div class="fin-row" style="color:#aaa;font-size:11px"><span>单件商品成本</span><span class="fin-val" id="r-pod-unitcost">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val" id="r-pod-mkt">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val" id="r-pod-ink">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（PODPOD承担部分）</span><span class="fin-val" id="r-pod-tier">—</span></div>
 <div class="fin-row" style="font-size:15px"><span>= 季度净利润</span><span class="fin-val" id="r-pod-net">—</span></div>
 <div class="fin-row"><span>季净利率</span><span class="fin-val" id="r-pod-rate">—</span></div>
@@ -242,6 +254,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <script>
 let tab='quarter';
 let mode='pod';
+let costAlloc={cost:'podpod',marketing:'podpod',posm:'podpod',ink:'podpod',material:'podpod'};
 let tiers=[{threshold:65000,rate:5,podShare:20},{threshold:80000,rate:10,podShare:20},{threshold:95000,rate:15,podShare:20},{threshold:110000,rate:20,podShare:20},{threshold:125000,rate:25,podShare:20},{threshold:150000,rate:30,podShare:20}];
 function setMode(m){
   mode=m;
@@ -313,10 +326,11 @@ function calcTier(gmvQ){
 }
 function getSnap(){
   const s={};
-  ['visitors','engage','conv','checkins','aov','cogs','aicost','marketing','opscost','podpct','dipct','opspct','mprice','mcount','deposit','runmonths','losslimit','ink'].forEach(k=>s[k]=g('s-'+k));
+  ['visitors','engage','conv','checkins','aov','cogs','aicost','marketing','opscost','podpct','dipct','opspct','mprice','mcount','deposit','runmonths','losslimit','ink','posm','material','express'].forEach(k=>s[k]=g('s-'+k));
   s.tiers=JSON.parse(JSON.stringify(tiers));
   s.tab=tab;
   s.mode=mode;
+  s.costAlloc={...costAlloc};
   return s;
 }
 function applySnap(snap){
@@ -324,8 +338,10 @@ function applySnap(snap){
     if(k==='tiers'){tiers=JSON.parse(JSON.stringify(snap.tiers));renderTiers();}
     else if(k==='tab'){tab=snap.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const tel=document.getElementById('tab-'+tab);if(tel)tel.classList.add('active');}
     else if(k==='mode'){mode=snap[k];document.getElementById('mode-pod').classList.toggle('active',mode==='pod');document.getElementById('mode-di').classList.toggle('active',mode==='di');document.getElementById('v-mach-payer').textContent=mode==='pod'?'PODPOD':'地推';renderTiers();}
+    else if(k==='costAlloc'){if(snap[k])costAlloc={...snap[k]};renderCostAlloc();}
     else{const el=document.getElementById('s-'+k);if(el)el.value=snap[k];}
   }
+  renderCostAlloc();
   upd();
 }
 function saveSnap(){
@@ -373,6 +389,7 @@ function delHist(i){
 function upd(){
   const visitors=g('s-visitors'),engage=g('s-engage'),conv=g('s-conv'),checkins=g('s-checkins'),aov=g('s-aov'),cogs=g('s-cogs'),aicost=g('s-aicost');
   const marketing=g('s-marketing'),opscost=g('s-opscost'),ink=g('s-ink');
+  const posm=g('s-posm'),material=g('s-material'),express=g('s-express');
   const machPayer=mode;
   const podpct=g('s-podpct'),dipct=g('s-dipct'),opspct=g('s-opspct');
   const mprice=g('s-mprice'),mcount=g('s-mcount'),deposit=g('s-deposit');
@@ -391,6 +408,9 @@ function upd(){
   document.getElementById('v-marketing').textContent=fm(marketing);
   document.getElementById('v-opscost').textContent=fm(opscost);
   document.getElementById('v-ink').textContent=fm(ink);
+  document.getElementById('v-posm').textContent=fm(posm);
+  document.getElementById('v-material').textContent=fm(material);
+  document.getElementById('v-express').textContent='¥'+express;
   document.getElementById('v-podpct').textContent=podpct+'%';
   document.getElementById('v-dipct').textContent=dipct+'%';
   document.getElementById('v-opspct').textContent=opspct+'%';
@@ -420,6 +440,9 @@ function upd(){
   if(hit){const bonus=qGmv*hit.rate/100;const ps=hit.podShare??20;tierBonusPodQ=bonus*ps/100;tierBonusDiQ=bonus*(100-ps)/100;}}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
+  const posmP=posm/(tab==='month'?12:tab==='quarter'?4:1);
+  const materialP=material/(tab==='month'?12:tab==='quarter'?4:1);
+  const expressCost=express*pOrders;
 
   // period values
   const pOrders=mOrders*dayMult;
@@ -436,11 +459,28 @@ function upd(){
   const pInk=inkQ*qMult;
   const podDiv=pGmv*podpct/100;
   const podCogs=pGmv*cogs/100;
-  const pDiNet=pDiGross-pTierDi;
+
+  // 地推费用
+  let diDeduct=pTierDi+expressCost;
+  if(costAlloc.cost==='ditui')diDeduct+=podCogs;
+  if(costAlloc.marketing==='ditui')diDeduct+=pMktCost;
+  if(costAlloc.posm==='ditui')diDeduct+=posmP;
+  if(costAlloc.ink==='ditui')diDeduct+=pInk;
+  if(costAlloc.material==='ditui')diDeduct+=materialP;
+  const pDiNet=pDiGross-diDeduct;
+
+  // PODPOD费用
+  let podDeduct=pTierPod;
+  if(costAlloc.cost==='podpod')podDeduct+=podCogs;
+  if(costAlloc.marketing==='podpod')podDeduct+=pMktCost;
+  if(costAlloc.posm==='podpod')podDeduct+=posmP;
+  if(costAlloc.ink==='podpod')podDeduct+=pInk;
+  if(costAlloc.material==='podpod')podDeduct+=materialP;
+  const podNet=podDiv-podDeduct;
 
   const pOpsTotal=pGmv*opspct/100+pTierDi+pTierPod;
   const pPodTotal=podDiv;
-  const podNet=podDiv-podCogs-pMktCost-pInk-pTierPod;
+  const podNetVal=podNet; // already computed above
   const netInvest=mprice*mcount-deposit*mcount;
 
   // update labels
@@ -488,19 +528,25 @@ function upd(){
   // PODPOD明细
   fv(document.getElementById('r-pod-gmv'),pGmv);
   fv(document.getElementById('r-pod-div'),podDiv);
-  fv(document.getElementById('r-pod-cogs'),-podCogs);
+  // 动态PODPOD费用行
+  let podHtml='';
+  if(costAlloc.marketing==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
+  if(costAlloc.posm==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用（摊）</span><span class="fin-val">${fm(-posmP)}</span></div>`;
+  if(costAlloc.ink==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
+  if(costAlloc.material==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料（摊）</span><span class="fin-val">${fm(-materialP)}</span></div>`;
+  document.getElementById('r-pod-cost-rows').innerHTML=podHtml;
+  if(costAlloc.cost==='podpod')fv(document.getElementById('r-pod-cogs'),-podCogs);
+  else document.getElementById('r-pod-cogs').textContent='—';
   const unitCost=pOrders>0?(pGmv*cogs/100/pOrders):0;
 
-  fv(document.getElementById('r-pod-mkt'),-pMktCost);
-  fv(document.getElementById('r-pod-ink'),-pInk);
-  if(tierBonusPodQ>0){fv(document.getElementById('r-pod-tier'),-pTierPod);}
+  fv(document.getElementById('r-pod-tier'),tierBonusPodQ>0?-pTierPod:0);
   fv(document.getElementById('r-pod-net'),podNet);
-  const podRate=pGmv!==0?(podNet/pGmv*100):0;
+  const podRate=pGmv!==0?(podNetVal/pGmv*100):0;
   document.getElementById('r-pod-rate').textContent=(podRate>=0?'+':'')+podRate.toFixed(1)+'%';
   if(podRate<0)document.getElementById('r-pod-rate').classList.add('neg');else document.getElementById('r-pod-rate').classList.remove('neg');
-  fv(document.getElementById('r-pod-yr'),podNet*(12/(dayMult/30)));
+  fv(document.getElementById('r-pod-yr'),podNetVal*(12/(dayMult/30)));
   document.getElementById('r-pod-unitcost').textContent='¥'+unitCost.toFixed(1);
-  document.getElementById('p-pod-net').textContent='净利润 '+fm(podNet);
+  document.getElementById('p-pod-net').textContent='净利润 '+fm(podNetVal);
 
   // AI cost detail
   document.getElementById('lbl-ai-gens').textContent=periodName+'生图人次';
@@ -511,6 +557,15 @@ function upd(){
 
   // 地推明细
   fv(document.getElementById('r-sm-tier'),-pTierDi);
+  fv(document.getElementById('r-sm-express'),-expressCost);
+  // 动态地推费用行
+  let smHtml='';
+  if(costAlloc.cost==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val">${fm(-podCogs)}</span></div>`;
+  if(costAlloc.marketing==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
+  if(costAlloc.posm==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用（摊）</span><span class="fin-val">${fm(-posmP)}</span></div>`;
+  if(costAlloc.ink==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
+  if(costAlloc.material==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料（摊）</span><span class="fin-val">${fm(-materialP)}</span></div>`;
+  document.getElementById('r-sm-cost-rows').innerHTML=smHtml;
   document.getElementById('lbl-sm-net').textContent='= '+periodName+'净利润';
   fv(document.getElementById('r-sm-net'),pDiNet);
   const rate=pGmv!==0?(pDiNet/pGmv*100):0;
@@ -577,6 +632,18 @@ function upd(){
   ti.innerHTML=tierHtml;
 }
 
+function renderCostAlloc(){
+  const box=document.getElementById('cost-alloc-box');
+  const items=[{key:'cost',name:'商品成本'},{key:'marketing',name:'营销推广'},{key:'posm',name:'POSM费用'},{key:'ink',name:'墨水耗材'},{key:'material',name:'首批材料'}];
+  let h='<div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:2px">费用归属</div>';
+  items.forEach(it=>{
+    const podActive=costAlloc[it.key]==='podpod'?'active':'';
+    const diActive=costAlloc[it.key]==='ditui'?'active':'';
+    h+=`<div class="ca-row"><span class="ca-name">${it.name}</span><button class="ca-btn ${podActive}" onclick="costAlloc['${it.key}']='podpod';renderCostAlloc();upd()">PODPOD</button><button class="ca-btn ${diActive}" onclick="costAlloc['${it.key}']='ditui';renderCostAlloc();upd()">地推</button></div>`;
+  });
+  box.innerHTML=h;
+}
+renderCostAlloc();
 renderTiers();
 upd();
 loadHist();
