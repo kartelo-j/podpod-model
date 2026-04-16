@@ -75,6 +75,13 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 .hist-del{font-size:12px;padding:6px 10px;border-radius:8px;border:1.5px solid #ddd;color:#aaa;background:#fff;cursor:pointer}
 .hist-del:hover{border-color:#E24B4A;color:#E24B4A}
 .neg{color:#E24B4A}
+@media print{
+  body{background:#fff;padding:12px}
+  .btn-group,.tab-wrap,.save-bar,.tier-add,.hist-item,.tier-del,.hist-actions,#alert-box,.save-btn{display:none!important}
+  input[type=range]{-webkit-appearance:none;pointer-events:none}
+  .card{break-inside:avoid;border-color:#ddd}
+  .metrics,.party-grid{break-inside:avoid}
+}
 </style>
 </head>
 <body>
@@ -218,6 +225,11 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div id="alert-box"></div>
 
 <hr class="divider">
+
+<p class="sec">导出</p>
+<div class="card">
+<button class="save-btn" style="width:100%" onclick="exportPDF()">📄 导出 PDF</button>
+</div>
 
 <p class="sec">保存方案</p>
 <div class="card">
@@ -569,6 +581,7 @@ function upd(){
 renderTiers();
 upd();
 loadHist();
+function exportPDF(){window.print();}
 </script>
 </body>
 </html>
