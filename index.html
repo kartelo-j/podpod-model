@@ -322,10 +322,13 @@ function calcTier(gmvQ){
   if(!sorted.length)return{bonus:0,passed:0,total:0,gap:0};
   var hit=null;
   for(var i=0;i<sorted.length;i++){if(gmvQ>=sorted[i].threshold)hit=sorted[i];}
-  if(!hit)return{bonus:0,passed:0,total:sorted.length,gap:sorted[0].threshold-gmvQ};
-  var podB=gmvQ*(hit.podShare||0)/100;
-  var diB=gmvQ*(hit.diShare||0)/100;
-  var bonus=podB+diB;
+  if(!hit)return{bonus:0,podB:0,diB:0,passed:0,total:sorted.length,gap:sorted[0].threshold-gmvQ};
+  // 如果最高达标档位奖励为0，向下查找有值的档位
+  var found=null;
+  for(var i=sorted.length-1;i>=0;i--){if(gmvQ>=sorted[i].threshold&&((sorted[i].podShare||0)>0||(sorted[i].diShare||0)>0)){found=sorted[i];break;}}
+  if(!found)found=hit;
+  var podB=gmvQ*(found.podShare||0)/100;
+  var diB=gmvQ*(found.diShare||0)/100;
   var bonus=podB+diB;
   var passedIdx=sorted.indexOf(hit)+1;
   var nextTier=sorted[passedIdx];
