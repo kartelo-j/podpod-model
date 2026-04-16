@@ -438,7 +438,7 @@ function upd(){
   // split tier bonus by payer
   let tierBonusDiQ=0,tierBonusPodQ=0;
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=bonus*(hit.podShare??0)/100;tierBonusDiQ=bonus*(hit.diShare??0)/100;}
+  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=bonus*(hit.podShare??0)/100;tierBonusDiQ=bonus*(hit.diShare??0)/100;}}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
   const posmCost=posm;
