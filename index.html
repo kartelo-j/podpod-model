@@ -255,7 +255,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 let tab='quarter';
 let mode='pod';
 let costAlloc={cost:'podpod',marketing:'podpod',posm:'podpod',ink:'podpod',material:'podpod'};
-let tiers=[{threshold:65000,rate:5,podShare:20},{threshold:80000,rate:10,podShare:20},{threshold:95000,rate:15,podShare:20},{threshold:110000,rate:20,podShare:20},{threshold:125000,rate:25,podShare:20},{threshold:150000,rate:30,podShare:20}];
+let tiers=[{threshold:65000,rate:5,podShare:0,diShare:0},{threshold:80000,rate:10,podShare:0,diShare:0},{threshold:95000,rate:15,podShare:0,diShare:0},{threshold:110000,rate:20,podShare:0,diShare:0},{threshold:125000,rate:25,podShare:0,diShare:0},{threshold:150000,rate:30,podShare:0,diShare:0}];
 function setMode(m){
   mode=m;
   document.getElementById('mode-pod').classList.toggle('active',m==='pod');
@@ -298,7 +298,8 @@ function renderTiers(){
       <span style="font-size:12px;color:#555">奖励</span>
       <input type="number" value="${t.rate}" min="0" max="50" step="1" onchange="tiers[${i}].rate=+this.value;upd()">
       <span style="font-size:12px;color:#555">%</span>
-      <span style="font-size:11px;color:#888">POD</span><input type="number" value="${t.podShare??20}" min="0" max="100" step="5" style="width:52px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;renderTiers();upd()"><span style="font-size:11px;color:#888">%</span><span style="font-size:11px;color:#888">地推</span><span style="font-size:12px;color:#555;font-weight:600" id="tier-di-share-${i}">${100-(t.podShare??20)}%</span>
+      <span style="font-size:11px;color:#888;margin-left:6px">POD出</span><input type="number" value="${t.podShare??0}" min="0" max="50" step="1" style="width:44px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;upd()"><span style="font-size:11px;color:#888">%</span>
+      <span style="font-size:11px;color:#888;margin-left:6px">地推出</span><input type="number" value="${t.diShare??0}" min="0" max="50" step="1" style="width:44px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].diShare=+this.value;upd()"><span style="font-size:11px;color:#888">%</span>
       <button class="tier-del" onclick="tiers.splice(${i},1);renderTiers();upd()" title="删除">×</button>
     </div>`).join('');
   document.querySelector('.tier-add').style.display=tiers.length>=10?'none':'';
@@ -437,11 +438,11 @@ function upd(){
   // split tier bonus by payer
   let tierBonusDiQ=0,tierBonusPodQ=0;
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;const ps=hit.podShare??20;tierBonusPodQ=bonus*ps/100;tierBonusDiQ=bonus*(100-ps)/100;}}
+  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=gmvQ*(hit.podShare??0)/100;tierBonusDiQ=gmvQ*(hit.diShare??0)/100;}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
-  const posmP=posm/(tab==='month'?12:tab==='quarter'?4:1);
-  const materialP=material/(tab==='month'?12:tab==='quarter'?4:1);
+  const posmCost=posm;
+  const materialCost=material;
   // period values
   const pOrders=mOrders*dayMult;
   const expressCost=express*pOrders;
@@ -463,18 +464,18 @@ function upd(){
   let diDeduct=pTierDi+expressCost;
   if(costAlloc.cost==='ditui')diDeduct+=podCogs;
   if(costAlloc.marketing==='ditui')diDeduct+=pMktCost;
-  if(costAlloc.posm==='ditui')diDeduct+=posmP;
+  if(costAlloc.posm==='ditui')diDeduct+=posmCost;
   if(costAlloc.ink==='ditui')diDeduct+=pInk;
-  if(costAlloc.material==='ditui')diDeduct+=materialP;
+  if(costAlloc.material==='ditui')diDeduct+=materialCost;
   const pDiNet=pDiGross-diDeduct;
 
   // PODPOD费用
   let podDeduct=pTierPod;
   if(costAlloc.cost==='podpod')podDeduct+=podCogs;
   if(costAlloc.marketing==='podpod')podDeduct+=pMktCost;
-  if(costAlloc.posm==='podpod')podDeduct+=posmP;
+  if(costAlloc.posm==='podpod')podDeduct+=posmCost;
   if(costAlloc.ink==='podpod')podDeduct+=pInk;
-  if(costAlloc.material==='podpod')podDeduct+=materialP;
+  if(costAlloc.material==='podpod')podDeduct+=materialCost;
   const podNet=podDiv-podDeduct;
 
   const pOpsTotal=pGmv*opspct/100+pTierDi+pTierPod;
@@ -530,9 +531,9 @@ function upd(){
   // 动态PODPOD费用行
   let podHtml='';
   if(costAlloc.marketing==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
-  if(costAlloc.posm==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用（摊）</span><span class="fin-val">${fm(-posmP)}</span></div>`;
+  if(costAlloc.posm==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">${fm(-posmCost)}</span></div>`;
   if(costAlloc.ink==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
-  if(costAlloc.material==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料（摊）</span><span class="fin-val">${fm(-materialP)}</span></div>`;
+  if(costAlloc.material==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">${fm(-materialCost)}</span></div>`;
   document.getElementById('r-pod-cost-rows').innerHTML=podHtml;
   if(costAlloc.cost==='podpod')fv(document.getElementById('r-pod-cogs'),-podCogs);
   else document.getElementById('r-pod-cogs').textContent='—';
@@ -561,9 +562,9 @@ function upd(){
   let smHtml='';
   if(costAlloc.cost==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val">${fm(-podCogs)}</span></div>`;
   if(costAlloc.marketing==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
-  if(costAlloc.posm==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用（摊）</span><span class="fin-val">${fm(-posmP)}</span></div>`;
+  if(costAlloc.posm==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">${fm(-posmCost)}</span></div>`;
   if(costAlloc.ink==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
-  if(costAlloc.material==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料（摊）</span><span class="fin-val">${fm(-materialP)}</span></div>`;
+  if(costAlloc.material==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">${fm(-materialCost)}</span></div>`;
   document.getElementById('r-sm-cost-rows').innerHTML=smHtml;
   document.getElementById('lbl-sm-net').textContent='= '+periodName+'净利润';
   fv(document.getElementById('r-sm-net'),pDiNet);
