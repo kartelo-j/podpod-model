@@ -25,9 +25,6 @@ input[type=range].sl-green::-webkit-slider-thumb{background:#1D9E75}
 input[type=range].sl-green::-moz-range-thumb{background:#1D9E75}
 input[type=range].sl-blue::-webkit-slider-thumb{background:#378ADD}
 input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
-.btn-group{display:flex;gap:8px;margin-bottom:20px}
-.sc-btn{flex:1;padding:10px 0;font-size:13px;border-radius:10px;cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#888;transition:all .15s}
-.sc-btn.active{background:#7C5CFC;border-color:#7C5CFC;color:#fff;font-weight:600}
 .tab-wrap{display:flex;border-radius:10px;overflow:hidden;border:1.5px solid #ddd;margin-bottom:16px}
 .tab-btn{flex:1;padding:8px 0;font-size:13px;background:#fff;border:none;border-right:1px solid #ddd;cursor:pointer;color:#888}
 .tab-btn:last-child{border-right:none}
@@ -50,10 +47,10 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 .alert.warn{background:#FFFBEB;color:#92600A;border:1px solid #FDE68A}
 .alert.ok{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
 .alert.info{background:#EFF6FF;color:#185FA5;border:1px solid #85B7EB}
-.tier-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.tier-row input[type=number]{width:80px;padding:6px 8px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;text-align:center;outline:none}
+.tier-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.tier-row input[type=number]{width:72px;padding:5px 6px;border:1.5px solid #ddd;border-radius:8px;font-size:12px;text-align:center;outline:none}
 .tier-row input[type=number]:focus{border-color:#378ADD}
-.tier-del{width:28px;height:28px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#aaa;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.tier-del{width:26px;height:26px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#aaa;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
 .tier-del:hover{border-color:#E24B4A;color:#E24B4A}
 .tier-add{padding:8px 14px;border-radius:8px;border:1.5px solid #378ADD;background:#fff;color:#378ADD;cursor:pointer;font-size:12.5px;margin-top:4px}
 .tier-add:hover{background:#378ADD;color:#fff}
@@ -74,14 +71,10 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 .hist-restore:hover{background:#7C5CFC;color:#fff}
 .hist-del{font-size:12px;padding:6px 10px;border-radius:8px;border:1.5px solid #ddd;color:#aaa;background:#fff;cursor:pointer}
 .hist-del:hover{border-color:#E24B4A;color:#E24B4A}
-.ca-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#F9F8F5;border-radius:8px;font-size:12.5px}
-.ca-name{flex:1;color:#555}
-.ca-btn{padding:5px 14px;border-radius:7px;border:1.5px solid #ddd;background:#fff;color:#888;font-size:12px;cursor:pointer;transition:all .15s}
-.ca-btn.active{background:#7C5CFC;border-color:#7C5CFC;color:#fff;font-weight:600}
 .neg{color:#E24B4A}
 @media print{
   body{background:#fff;padding:12px}
-  .btn-group,.tab-wrap,.save-bar,.tier-add,.hist-item,.tier-del,.hist-actions,#alert-box,.save-btn{display:none!important}
+  .tab-wrap,.save-bar,.tier-add,.hist-item,.tier-del,.hist-actions,#alert-box,.save-btn{display:none!important}
   input[type=range]{-webkit-appearance:none;pointer-events:none}
   .card{break-inside:avoid;border-color:#ddd}
   .metrics,.party-grid{break-inside:avoid}
@@ -98,8 +91,13 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <button class="tab-btn" id="mode-di" onclick="setMode('di')">地推自有</button>
 </div>
 
-<div style="display:grid;gap:8px;margin-bottom:16px" id="cost-alloc-box">
-<div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:2px">费用归属</div>
+<p class="sec">费用归属</p>
+<div class="card">
+<div style="font-size:11px;color:#888;margin-bottom:10px">商品成本、营销推广、POSM、墨水耗材、首批材料统一归属</div>
+<div class="tab-wrap">
+<button class="tab-btn active" id="cost-pod" onclick="setCostOwner('podpod')">归属 PODPOD</button>
+<button class="tab-btn" id="cost-di" onclick="setCostOwner('ditui')">归属地推</button>
+</div>
 </div>
 
 <p class="sec">流量预估</p>
@@ -124,12 +122,11 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <p class="sec">分成与激励</p>
 <div class="card">
 <div style="font-size:11px;color:#aaa;margin-bottom:12px">三方分成比例（从GMV中扣除）</div>
-<div class="sl-row"><span class="sl-label">PODPOD分成</span><input type="range" id="s-podpct" min="0" max="60" step="1" value="40" oninput="linkPct('pod',this.value)"><span class="sl-val" id="v-podpct">20%</span></div>
-<div class="sl-row"><span class="sl-label">地推分成</span><input type="range" class="sl-green" id="s-dipct" min="0" max="60" step="1" value="20" oninput="linkPct('di',this.value)"><span class="sl-val" id="v-dipct">40%</span></div>
+<div class="sl-row"><span class="sl-label">PODPOD分成</span><input type="range" id="s-podpct" min="0" max="60" step="1" value="40" oninput="linkPct('pod',this.value)"><span class="sl-val" id="v-podpct">40%</span></div>
+<div class="sl-row"><span class="sl-label">地推分成</span><input type="range" class="sl-green" id="s-dipct" min="0" max="60" step="1" value="20" oninput="linkPct('di',this.value)"><span class="sl-val" id="v-dipct">20%</span></div>
 <div class="sl-row"><span class="sl-label">运营方分成</span><input type="range" class="sl-blue" id="s-opspct" min="0" max="60" step="1" value="40" oninput="linkPct('ops',this.value)"><span class="sl-val" id="v-opspct">40%</span></div>
-
 <div class="divider" style="margin:14px 0"></div>
-<div style="font-size:12.5px;font-weight:600;margin-bottom:10px">阶梯奖励（季度 · PODPOD与地推联合给运营方）</div>
+<div style="font-size:12.5px;font-weight:600;margin-bottom:10px">阶梯奖励（季度 · 给运营方的额外奖励）</div>
 <div id="tier-list"></div>
 <button class="tier-add" onclick="addTier()">+ 添加档位</button>
 <div class="tier-info" id="tier-info"></div>
@@ -139,7 +136,8 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="card">
 <div class="sl-row"><span class="sl-label">POSM费用（一次性）</span><input type="range" id="s-posm" min="0" max="20000" step="500" value="5000" oninput="upd()"><span class="sl-val" id="v-posm">¥5,000</span></div>
 <div class="sl-row"><span class="sl-label">首批材料费用（一次性）</span><input type="range" id="s-material" min="0" max="5000" step="100" value="700" oninput="upd()"><span class="sl-val" id="v-material">¥700</span></div>
-<div class="sl-row"><span class="sl-label">PODPOD机器单价</span><input type="range" id="s-mprice" min="10000" max="100000" step="5000" value="30000" oninput="upd()"><span class="sl-val" id="v-mprice">¥30,000</span></div><div style="font-size:10.5px;color:#aaa;margin:-4px 0 8px 180px">（含初装费、运输费、首批耗材）</div>
+<div class="sl-row"><span class="sl-label">PODPOD机器单价</span><input type="range" id="s-mprice" min="10000" max="100000" step="5000" value="30000" oninput="upd()"><span class="sl-val" id="v-mprice">¥30,000</span></div>
+<div style="font-size:10.5px;color:#aaa;margin:-4px 0 8px 180px">（含初装费、运输费、首批耗材）</div>
 <div class="sl-row"><span class="sl-label">机器费用承担方</span><span class="sl-val" id="v-mach-payer" style="font-weight:600">PODPOD</span></div>
 <div class="sl-row"><span class="sl-label">持有机器数量</span><input type="range" id="s-mcount" min="1" max="20" step="1" value="1" oninput="upd()"><span class="sl-val" id="v-mcount">1台</span></div>
 <div class="sl-row"><span class="sl-label">运营方押金/台</span><input type="range" id="s-deposit" min="0" max="50000" step="1000" value="10000" oninput="upd()"><span class="sl-val" id="v-deposit">¥10,000</span></div>
@@ -163,7 +161,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="mc"><div class="mc-label" id="lbl-orders">季度订单量</div><div class="mc-value" id="r-orders">—</div><div class="mc-sub">笔</div></div>
 <div class="mc"><div class="mc-label" id="lbl-gmv">季度GMV</div><div class="mc-value" id="r-gmv">—</div><div class="mc-sub">元</div></div>
 <div class="mc"><div class="mc-label" id="lbl-gens">季度生图</div><div class="mc-value" id="r-gens">—</div><div class="mc-sub">人次</div></div>
-<div class="mc"><div class="mc-label" id="lbl-ai">季度AI成本</div><div class="mc-value" id="r-ai" style="color:#BA7517">—</div><div class="mc-sub">元(PODPOD侧)</div></div>
+<div class="mc"><div class="mc-label" id="lbl-ai">季度AI成本</div><div class="mc-value" id="r-ai" style="color:#BA7517">—</div><div class="mc-sub">元</div></div>
 <div class="mc"><div class="mc-label" id="lbl-gross">季度毛利</div><div class="mc-value" id="r-gross">—</div><div class="mc-sub">元(地推)</div></div>
 <div class="mc"><div class="mc-label" id="lbl-net">季度净利润</div><div class="mc-value" id="r-net">—</div><div class="mc-sub">元(地推)</div></div>
 </div>
@@ -178,9 +176,8 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <p class="sec">地推财务明细</p>
 <div class="card">
 <div class="fin-row"><span id="lbl-sm-gmv">季度GMV</span><span class="fin-val" id="r-sm-gmv">—</span></div>
-<div class="fin-row"><span id="lbl-sm-div">地推分成(40%)</span><span class="fin-val" id="r-sm-div">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担部分）</span><span class="fin-val" id="r-sm-tier">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：快递费</span><span class="fin-val" id="r-sm-express">—</span></div>
+<div class="fin-row"><span id="lbl-sm-div">地推分成(20%)</span><span class="fin-val" id="r-sm-div">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担）</span><span class="fin-val" id="r-sm-tier">—</span></div>
 <div id="r-sm-cost-rows"></div>
 <div class="fin-row" style="font-size:15px"><span id="lbl-sm-net">= 季度净利润</span><span class="fin-val" id="r-sm-net">—</span></div>
 <div class="fin-row"><span id="lbl-sm-rate">季净利率</span><span class="fin-val" id="r-sm-rate">—</span></div>
@@ -207,10 +204,11 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="card">
 <div class="fin-row"><span>季度GMV</span><span class="fin-val" id="r-pod-gmv">—</span></div>
 <div class="fin-row"><span>PODPOD 分成</span><span class="fin-val" id="r-pod-div">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：快递费</span><span class="fin-val" id="r-pod-express">—</span></div>
 <div id="r-pod-cost-rows"></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val" id="r-pod-cogs">—</span></div>
 <div class="fin-row" style="color:#aaa;font-size:11px"><span>单件商品成本</span><span class="fin-val" id="r-pod-unitcost">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（PODPOD承担部分）</span><span class="fin-val" id="r-pod-tier">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（PODPOD承担）</span><span class="fin-val" id="r-pod-tier">—</span></div>
 <div class="fin-row" style="font-size:15px"><span>= 季度净利润</span><span class="fin-val" id="r-pod-net">—</span></div>
 <div class="fin-row"><span>季净利率</span><span class="fin-val" id="r-pod-rate">—</span></div>
 <div class="fin-row"><span>年化净利润</span><span class="fin-val" id="r-pod-yr">—</span></div>
@@ -254,21 +252,28 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <script>
 let tab='quarter';
 let mode='pod';
-let costAlloc={cost:'podpod',marketing:'podpod',posm:'podpod',ink:'podpod',material:'podpod'};
-let tiers=[{threshold:65000,rate:5,podShare:0,diShare:0},{threshold:80000,rate:10,podShare:0,diShare:0},{threshold:95000,rate:15,podShare:0,diShare:0},{threshold:110000,rate:20,podShare:0,diShare:0},{threshold:125000,rate:25,podShare:0,diShare:0},{threshold:150000,rate:30,podShare:0,diShare:0}];
+let costOwner='podpod';
+let tiers=[{threshold:65000,podShare:0,diShare:0},{threshold:80000,podShare:0,diShare:0},{threshold:95000,podShare:0,diShare:0},{threshold:110000,podShare:0,diShare:0},{threshold:125000,podShare:0,diShare:0},{threshold:150000,podShare:0,diShare:0}];
+
 function setMode(m){
   mode=m;
   document.getElementById('mode-pod').classList.toggle('active',m==='pod');
   document.getElementById('mode-di').classList.toggle('active',m==='di');
   document.getElementById('v-mach-payer').textContent=m==='pod'?'PODPOD':'地推';
-  if(m==='pod'){document.getElementById('s-podpct').value=40;document.getElementById('s-dipct').value=20;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='40%';document.getElementById('v-dipct').textContent='20%';document.getElementById('v-opspct').textContent='40%';}
-  else{document.getElementById('s-podpct').value=20;document.getElementById('s-dipct').value=40;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='20%';document.getElementById('v-dipct').textContent='40%';document.getElementById('v-opspct').textContent='40%';}
+  if(m==='pod'){document.getElementById('s-podpct').value=40;document.getElementById('s-dipct').value=20;document.getElementById('s-opspct').value=40;}
+  else{document.getElementById('s-podpct').value=20;document.getElementById('s-dipct').value=40;document.getElementById('s-opspct').value=40;}
   renderTiers();upd();
+}
+function setCostOwner(v){
+  costOwner=v;
+  document.getElementById('cost-pod').classList.toggle('active',v==='podpod');
+  document.getElementById('cost-di').classList.toggle('active',v==='ditui');
+  upd();
 }
 function linkPct(changed,val){
   val=+val;
-  const pod=+document.getElementById('s-podpct').value;
-  const di=+document.getElementById('s-dipct').value;
+  var pod=+document.getElementById('s-podpct').value;
+  var di=+document.getElementById('s-dipct').value;
   if(changed==='di')document.getElementById('s-opspct').value=Math.max(0,100-pod-val);
   else if(changed==='ops')document.getElementById('s-dipct').value=Math.max(0,100-pod-val);
   else document.getElementById('s-opspct').value=Math.max(0,100-di-val);
@@ -277,128 +282,109 @@ function linkPct(changed,val){
 function g(id){return+document.getElementById(id).value}
 function fm(n){
   if(n===0)return'¥0';
-  const a=Math.abs(n),s=n<0?'-¥':'¥';
+  var a=Math.abs(n),s=n<0?'-¥':'¥';
   if(a>=10000)return s+(a/10000).toFixed(2)+'万';
   return s+a.toLocaleString('zh-CN',{maximumFractionDigits:2,minimumFractionDigits:a%1!==0?2:0});
 }
 function fv(el,n){el.textContent=fm(n);if(n<0)el.classList.add('neg');else el.classList.remove('neg');}
 function setTab(t,btn){
   tab=t;
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-wrap')[1].querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
   upd();
 }
-
 function renderTiers(){
-  document.getElementById('tier-list').innerHTML=tiers.map((t,i)=>`
-    <div class="tier-row">
-      <span style="font-size:12px;color:#888;width:40px">${i+1}档</span>
-      <span style="font-size:12px;color:#555">季度GMV ≥</span>
-      <input type="number" value="${t.threshold}" min="10000" step="10000" onchange="tiers[${i}].threshold=+this.value;tiers.sort((a,b)=>a.threshold-b.threshold);renderTiers();upd()">
-      <span style="font-size:12px;color:#555">奖励</span>
-      <input type="number" value="${t.rate}" min="0" max="50" step="1" onchange="tiers[${i}].rate=+this.value;upd()">
-      <span style="font-size:12px;color:#555">%</span>
-      <span style="font-size:11px;color:#888;margin-left:6px">POD出</span><input type="number" value="${t.podShare??0}" min="0" max="50" step="1" style="width:44px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;upd()"><span style="font-size:11px;color:#888">%</span>
-      <span style="font-size:11px;color:#888;margin-left:6px">地推出</span><input type="number" value="${t.diShare??0}" min="0" max="50" step="1" style="width:44px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].diShare=+this.value;upd()"><span style="font-size:11px;color:#888">%</span>
-      <button class="tier-del" onclick="tiers.splice(${i},1);renderTiers();upd()" title="删除">×</button>
-    </div>`).join('');
+  document.getElementById('tier-list').innerHTML=tiers.map(function(t,i){
+    return '<div class="tier-row">'
+      +'<span style="font-size:12px;color:#888;width:30px">'+(i+1)+'</span>'
+      +'<span style="font-size:11px;color:#555">GMV≥</span>'
+      +'<input type="number" value="'+t.threshold+'" min="10000" step="10000" onchange="tiers['+i+'].threshold=+this.value;tiers.sort(function(a,b){return a.threshold-b.threshold});renderTiers();upd()">'
+      +'<span style="font-size:11px;color:#555">POD出</span>'
+      +'<input type="number" value="'+(t.podShare||0)+'" min="0" max="50" step="1" style="width:44px" onchange="tiers['+i+'].podShare=+this.value;upd()">'
+      +'<span style="font-size:11px;color:#555">%</span>'
+      +'<span style="font-size:11px;color:#555">地推出</span>'
+      +'<input type="number" value="'+(t.diShare||0)+'" min="0" max="50" step="1" style="width:44px" onchange="tiers['+i+'].diShare=+this.value;upd()">'
+      +'<span style="font-size:11px;color:#555">%</span>'
+      +'<button class="tier-del" onclick="tiers.splice('+i+',1);renderTiers();upd()">×</button>'
+      +'</div>';
+  }).join('');
   document.querySelector('.tier-add').style.display=tiers.length>=10?'none':'';
-
 }
 function addTier(){
   if(tiers.length>=10)return;
-  const last=tiers.length?Math.max(...tiers.map(t=>t.threshold)):0;
-  tiers.push({threshold:last+20000,rate:5,podShare:0,diShare:0});
-  tiers.sort((a,b)=>a.threshold-b.threshold);
+  var last=tiers.length?Math.max.apply(null,tiers.map(function(t){return t.threshold})):0;
+  tiers.push({threshold:last+20000,podShare:0,diShare:0});
+  tiers.sort(function(a,b){return a.threshold-b.threshold});
   renderTiers();upd();
 }
 function calcTier(gmvQ){
-  const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);
-  if(sorted.length===0)return{bonus:0,passed:0,total:0,gap:0};
-  // 找到最高达标档位
-  let hit=null;
-  for(let t of sorted){if(gmvQ>=t.threshold)hit=t;}
+  var sorted=tiers.slice().sort(function(a,b){return a.threshold-b.threshold});
+  if(!sorted.length)return{bonus:0,passed:0,total:0,gap:0};
+  var hit=null;
+  for(var i=0;i<sorted.length;i++){if(gmvQ>=sorted[i].threshold)hit=sorted[i];}
   if(!hit)return{bonus:0,passed:0,total:sorted.length,gap:sorted[0].threshold-gmvQ};
-  const bonus=gmvQ*hit.rate/100;
-  const passedIdx=sorted.indexOf(hit)+1;
-  const nextTier=sorted[passedIdx];
-  const gap=nextTier?nextTier.threshold-gmvQ:0;
-  return{bonus,passed:passedIdx,total:sorted.length,gap};
+  var podB=gmvQ*(hit.podShare||0)/100;
+  var diB=gmvQ*(hit.diShare||0)/100;
+  var bonus=podB+diB;
+  var passedIdx=sorted.indexOf(hit)+1;
+  var nextTier=sorted[passedIdx];
+  return{bonus:bonus,podB:podB,diB:diB,passed:passedIdx,total:sorted.length,gap:nextTier?nextTier.threshold-gmvQ:0};
 }
 function getSnap(){
-  const s={};
-  ['visitors','engage','conv','checkins','aov','cogs','aicost','marketing','opscost','podpct','dipct','opspct','mprice','mcount','deposit','runmonths','losslimit','ink','posm','material','express'].forEach(k=>s[k]=g('s-'+k));
+  var s={};
+  ['visitors','engage','conv','checkins','aov','cogs','aicost','marketing','opscost','podpct','dipct','opspct','mprice','mcount','deposit','runmonths','losslimit','ink','posm','material','express'].forEach(function(k){s[k]=g('s-'+k)});
   s.tiers=JSON.parse(JSON.stringify(tiers));
-  s.tab=tab;
-  s.mode=mode;
-  s.costAlloc={...costAlloc};
+  s.tab=tab;s.mode=mode;s.costOwner=costOwner;
   return s;
 }
 function applySnap(snap){
-  for(let k in snap){
+  for(var k in snap){
     if(k==='tiers'){tiers=JSON.parse(JSON.stringify(snap.tiers));renderTiers();}
-    else if(k==='tab'){tab=snap.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const tel=document.getElementById('tab-'+tab);if(tel)tel.classList.add('active');}
-    else if(k==='mode'){mode=snap[k];document.getElementById('mode-pod').classList.toggle('active',mode==='pod');document.getElementById('mode-di').classList.toggle('active',mode==='di');document.getElementById('v-mach-payer').textContent=mode==='pod'?'PODPOD':'地推';renderTiers();}
-    else if(k==='costAlloc'){if(snap[k])costAlloc={...snap[k]};renderCostAlloc();}
-    else{const el=document.getElementById('s-'+k);if(el)el.value=snap[k];}
+    else if(k==='tab'){tab=snap.tab;}
+    else if(k==='mode'){mode=snap[k];document.getElementById('mode-pod').classList.toggle('active',mode==='pod');document.getElementById('mode-di').classList.toggle('active',mode==='di');document.getElementById('v-mach-payer').textContent=mode==='pod'?'PODPOD':'地推';}
+    else if(k==='costOwner'){costOwner=snap[k];document.getElementById('cost-pod').classList.toggle('active',costOwner==='podpod');document.getElementById('cost-di').classList.toggle('active',costOwner==='ditui');}
+    else{var el=document.getElementById('s-'+k);if(el)el.value=snap[k];}
   }
-  renderCostAlloc();
   upd();
 }
 function saveSnap(){
-  const name=document.getElementById('snap-name').value.trim();
+  var name=document.getElementById('snap-name').value.trim();
   if(!name)return;
-  const arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
-  arr.unshift({name,time:new Date().toLocaleString('zh-CN'),snap:getSnap()});
+  var arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
+  arr.unshift({name:name,time:new Date().toLocaleString('zh-CN'),snap:getSnap()});
   if(arr.length>20)arr.length=20;
   localStorage.setItem('podpod_history_v5',JSON.stringify(arr));
   document.getElementById('snap-name').value='';
   renderHist();
 }
-function loadHist(){
-  renderHist();
-}
 function renderHist(){
-  const arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
-  const el=document.getElementById('hist-list');
+  var arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
+  var el=document.getElementById('hist-list');
   if(!arr.length){el.innerHTML='<div style="text-align:center;color:#aaa;font-size:12.5px;padding:20px 0">暂无保存的方案</div>';return;}
-  el.innerHTML=arr.map((h,i)=>{
-    const s=h.snap;
-    const mGmv=s.visitors*s.engage/100*s.conv/100*s.aov;
-    const qGmv=mGmv*90;
-    return`<div class="hist-item">
-      <div class="hist-header"><span class="hist-name">${h.name}</span><span class="hist-time">${h.time}</span></div>
-      <div class="hist-stats">
-        <span class="hist-tag">日均${s.visitors}</span>
-        <span class="hist-tag">转化${s.conv}%</span>
-        <span class="hist-tag">客单价¥${s.aov}</span>
-        <span class="hist-tag">季GMV ${fm(qGmv)}</span>
-        <span class="hist-tag">阶梯${(s.tiers||[]).length}档</span>
-      </div>
-      <div class="hist-actions">
-        <button class="hist-restore" onclick="applySnap(JSON.parse('${JSON.stringify(h.snap).replace(/'/g,"\\'")}'))">恢复此方案</button>
-        <button class="hist-del" onclick="delHist(${i})">删除</button>
-      </div></div>`;
+  el.innerHTML=arr.map(function(h,i){
+    var s=h.snap;var mGmv=s.visitors*s.engage/100*s.conv/100*s.aov;var qGmv=mGmv*90;
+    return'<div class="hist-item"><div class="hist-header"><span class="hist-name">'+h.name+'</span><span class="hist-time">'+h.time+'</span></div>'
+      +'<div class="hist-stats"><span class="hist-tag">日均'+s.visitors+'</span><span class="hist-tag">转化'+s.conv+'%</span><span class="hist-tag">客单价¥'+s.aov+'</span><span class="hist-tag">季GMV '+fm(qGmv)+'</span></div>'
+      +'<div class="hist-actions"><button class="hist-restore" onclick="applySnap(JSON.parse(\''+JSON.stringify(h.snap).replace(/'/g,"\\'")+'\'))">恢复此方案</button>'
+      +'<button class="hist-del" onclick="delHist('+i+')">删除</button></div></div>';
   }).join('');
 }
 function delHist(i){
-  const arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
-  arr.splice(i,1);
-  localStorage.setItem('podpod_history_v5',JSON.stringify(arr));
-  renderHist();
+  var arr=JSON.parse(localStorage.getItem('podpod_history_v5')||'[]');
+  arr.splice(i,1);localStorage.setItem('podpod_history_v5',JSON.stringify(arr));renderHist();
 }
 function upd(){
-  const visitors=g('s-visitors'),engage=g('s-engage'),conv=g('s-conv'),checkins=g('s-checkins'),aov=g('s-aov'),cogs=g('s-cogs'),aicost=g('s-aicost');
-  const marketing=g('s-marketing'),opscost=g('s-opscost'),ink=g('s-ink');
-  const posm=g('s-posm'),material=g('s-material'),express=g('s-express');
-  const machPayer=mode;
-  const podpct=g('s-podpct'),dipct=g('s-dipct'),opspct=g('s-opspct');
-  const mprice=g('s-mprice'),mcount=g('s-mcount'),deposit=g('s-deposit');
-  const runmonths=g('s-runmonths'),losslimit=g('s-losslimit');
-  const dayMult=tab==='month'?30:tab==='quarter'?90:365;
-  const periodName=tab==='month'?'月':tab==='quarter'?'季':'年';
+  var visitors=g('s-visitors'),engage=g('s-engage'),conv=g('s-conv'),checkins=g('s-checkins'),aov=g('s-aov'),cogs=g('s-cogs'),aicost=g('s-aicost');
+  var marketing=g('s-marketing'),opscost=g('s-opscost'),ink=g('s-ink');
+  var posm=g('s-posm'),material=g('s-material'),express=g('s-express');
+  var podpct=g('s-podpct'),dipct=g('s-dipct'),opspct=g('s-opspct');
+  var mprice=g('s-mprice'),mcount=g('s-mcount'),deposit=g('s-deposit');
+  var runmonths=g('s-runmonths'),losslimit=g('s-losslimit');
+  var dayMult=tab==='month'?30:tab==='quarter'?90:365;
+  var periodName=tab==='month'?'月':tab==='quarter'?'季':'年';
+  var qMult=dayMult===90?1:(dayMult===30?1/3:4);
 
-  // update slider vals
+  // slider vals
   document.getElementById('v-visitors').textContent=visitors.toLocaleString();
   document.getElementById('v-engage').textContent=engage+'%';
   document.getElementById('v-conv').textContent=conv+'%';
@@ -421,67 +407,47 @@ function upd(){
   document.getElementById('v-runmonths').textContent=runmonths+'月';
   document.getElementById('v-losslimit').textContent=fm(losslimit);
 
-  // monthly calcs
-  const mPart=visitors*engage/100;
-  const mOrders=mPart*conv/100;
-  const mGmv=mOrders*aov;
-  const mGens=mPart*checkins;
-  const mAicost=mGens*aicost;
-  const diMonth=mGmv*dipct/100;
-  const opsMonth=mGmv*opspct/100;
-  const podMonth=mGmv*podpct/100;
+  // monthly
+  var mPart=visitors*engage/100;
+  var mOrders=mPart*conv/100;
+  var mGmv=mOrders*aov;
+  var mGens=mPart*checkins;
+  var mAicost=mGens*aicost;
 
   // quarterly tier
-  const qGmv=mGmv*90;
-  const tierResult=calcTier(qGmv);
-  const tierBonusQ=tierResult.bonus;
-  // split tier bonus by payer
-  let tierBonusDiQ=0,tierBonusPodQ=0;
-  {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=bonus*(hit.podShare??0)/100;tierBonusDiQ=bonus*(hit.diShare??0)/100;}}
-  const machTotal=mprice*mcount;
-  const inkQ=ink*3;
-  const posmCost=posm;
-  const materialCost=material;
+  var qGmv=mGmv*90;
+  var tr=calcTier(qGmv);
+  var tierPodQ=tr.podB;
+  var tierDiQ=tr.diB;
+
   // period values
-  const pOrders=mOrders*dayMult;
-  const expressCost=express*pOrders;
-  const pGmv=mGmv*dayMult;
-  const pGens=mGens*dayMult;
-  const pAicost=mAicost*dayMult;
-  const pDiGross=pGmv*dipct/100;
-  const pMktCost=marketing*(dayMult/30);
-  const pOpsCost=opscost*(dayMult/30);
-  const qMult=dayMult===90?1:(dayMult===30?0:4);
-  const pTierDi=tierBonusDiQ*qMult;
-  const pTierPod=tierBonusPodQ*qMult;
+  var pOrders=mOrders*dayMult;
+  var pGmv=mGmv*dayMult;
+  var pGens=mGens*dayMult;
+  var pAicost=mAicost*dayMult;
+  var expressCost=express*pOrders;
+  var pDiGross=pGmv*dipct/100;
+  var pMktCost=marketing*(dayMult/30);
+  var pOpsCost=opscost*(dayMult/30);
+  var pInk=ink*(dayMult/30);
+  var pTierPod=tierPodQ*qMult;
+  var pTierDi=tierDiQ*qMult;
+  var podDiv=pGmv*podpct/100;
+  var podCogs=pGmv*cogs/100;
+  var posmCost=posm;
+  var materialCost=material;
 
-  const pInk=inkQ*qMult;
-  const podDiv=pGmv*podpct/100;
-  const podCogs=pGmv*cogs/100;
+  // costs based on costOwner
+  var isPod=costOwner==='podpod';
+  // diDeduct: only tier
+  var diDeduct=pTierDi;
+  // podDeduct: express + tier + (costOwner=pod items)
+  var podDeduct=expressCost+pTierPod;
+  if(isPod){podDeduct+=podCogs+pMktCost+posmCost+pInk+materialCost;}
+  else{diDeduct+=podCogs+pMktCost+posmCost+pInk+materialCost;}
 
-  // 地推费用
-  let diDeduct=pTierDi+expressCost;
-  if(costAlloc.cost==='ditui')diDeduct+=podCogs;
-  if(costAlloc.marketing==='ditui')diDeduct+=pMktCost;
-  if(costAlloc.posm==='ditui')diDeduct+=posmCost;
-  if(costAlloc.ink==='ditui')diDeduct+=pInk;
-  if(costAlloc.material==='ditui')diDeduct+=materialCost;
-  const pDiNet=pDiGross-diDeduct;
-
-  // PODPOD费用
-  let podDeduct=pTierPod;
-  if(costAlloc.cost==='podpod')podDeduct+=podCogs;
-  if(costAlloc.marketing==='podpod')podDeduct+=pMktCost;
-  if(costAlloc.posm==='podpod')podDeduct+=posmCost;
-  if(costAlloc.ink==='podpod')podDeduct+=pInk;
-  if(costAlloc.material==='podpod')podDeduct+=materialCost;
-  const podNet=podDiv-podDeduct;
-
-  const pOpsTotal=pGmv*opspct/100+pTierDi+pTierPod;
-  const pPodTotal=podDiv;
-  const podNetVal=podNet; // already computed above
-  const netInvest=mprice*mcount-deposit*mcount;
+  var pDiNet=pDiGross-diDeduct;
+  var podNet=podDiv-podDeduct;
 
   // update labels
   document.getElementById('lbl-orders').textContent=periodName+'订单量';
@@ -502,25 +468,45 @@ function upd(){
   // party
   fv(document.getElementById('p-di'),pDiGross);
   document.getElementById('p-di-sub').textContent='分成 / '+periodName;
-  fv(document.getElementById('p-ops'),pOpsTotal);
+  var pOpsNet=pGmv*opspct/100+pTierDi+pTierPod-pOpsCost;
+  fv(document.getElementById('p-ops'),pGmv*opspct/100+pTierDi+pTierPod);
   document.getElementById('p-ops-sub').textContent='分成+奖励 / '+periodName;
-  fv(document.getElementById('p-pod'),pPodTotal);
+  fv(document.getElementById('p-pod'),podDiv);
   document.getElementById('p-pod-sub').textContent='分成 / '+periodName;
 
-  // detail
+  // 地推明细
   document.getElementById('lbl-sm-gmv').textContent=periodName+'GMV';
   fv(document.getElementById('r-sm-gmv'),pGmv);
-  document.getElementById('lbl-sm-div').textContent='地推分成';
+  document.getElementById('lbl-sm-div').textContent='地推分成('+dipct+'%)';
   fv(document.getElementById('r-sm-div'),pDiGross);
+  fv(document.getElementById('r-sm-tier'),-pTierDi);
+  // dynamic cost rows
+  var smHtml='';
+  if(!isPod){
+    smHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val">'+fm(-podCogs)+'</span></div>';
+    smHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">'+fm(-pMktCost)+'</span></div>';
+    smHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">'+fm(-posmCost)+'</span></div>';
+    smHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">'+fm(-pInk)+'</span></div>';
+    smHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">'+fm(-materialCost)+'</span></div>';
+  }
+  document.getElementById('r-sm-cost-rows').innerHTML=smHtml;
+  document.getElementById('lbl-sm-net').textContent='= '+periodName+'净利润';
+  fv(document.getElementById('r-sm-net'),pDiNet);
+  var rate=pGmv!==0?(pDiNet/pGmv*100):0;
+  document.getElementById('r-sm-rate').textContent=(rate>=0?'+':'')+rate.toFixed(1)+'%';
+  if(rate<0)document.getElementById('r-sm-rate').classList.add('neg');else document.getElementById('r-sm-rate').classList.remove('neg');
+  document.getElementById('lbl-sm-rate').textContent=periodName+'净利率';
+  fv(document.getElementById('r-sm-yr'),pDiNet*(12/(dayMult/30)));
+  document.getElementById('lbl-sm-yr').textContent='年化净利润';
+
   // 运营方明细
-  document.getElementById('lbl-os-div').textContent='运营方分成';
+  document.getElementById('lbl-os-div').textContent='运营方分成('+opspct+'%)';
   fv(document.getElementById('r-os-div'),pGmv*opspct/100);
   fv(document.getElementById('r-os-tier'),pTierDi+pTierPod);
   fv(document.getElementById('r-os-cost'),-pOpsCost);
-  const pOpsNet=pGmv*opspct/100+pTierDi+pTierPod-pOpsCost;
   document.getElementById('lbl-os-net').textContent='= '+periodName+'净利润';
   fv(document.getElementById('r-os-net'),pOpsNet);
-  const opsRate=pGmv!==0?(pOpsNet/pGmv*100):0;
+  var opsRate=pGmv!==0?(pOpsNet/pGmv*100):0;
   document.getElementById('lbl-os-rate').textContent=periodName+'净利率';
   document.getElementById('r-os-rate').textContent=(opsRate>=0?'+':'')+opsRate.toFixed(1)+'%';
   if(opsRate<0)document.getElementById('r-os-rate').classList.add('neg');else document.getElementById('r-os-rate').classList.remove('neg');
@@ -528,125 +514,73 @@ function upd(){
   // PODPOD明细
   fv(document.getElementById('r-pod-gmv'),pGmv);
   fv(document.getElementById('r-pod-div'),podDiv);
-  // 动态PODPOD费用行
-  let podHtml='';
-  if(costAlloc.marketing==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
-  if(costAlloc.posm==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">${fm(-posmCost)}</span></div>`;
-  if(costAlloc.ink==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
-  if(costAlloc.material==='podpod')podHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">${fm(-materialCost)}</span></div>`;
+  fv(document.getElementById('r-pod-express'),-expressCost);
+  var podHtml='';
+  if(isPod){
+    podHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">'+fm(-pMktCost)+'</span></div>';
+    podHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">'+fm(-posmCost)+'</span></div>';
+    podHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">'+fm(-pInk)+'</span></div>';
+    podHtml+='<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">'+fm(-materialCost)+'</span></div>';
+  }
   document.getElementById('r-pod-cost-rows').innerHTML=podHtml;
-  if(costAlloc.cost==='podpod')fv(document.getElementById('r-pod-cogs'),-podCogs);
+  if(isPod)fv(document.getElementById('r-pod-cogs'),-podCogs);
   else document.getElementById('r-pod-cogs').textContent='—';
-  const unitCost=pOrders>0?(pGmv*cogs/100/pOrders):0;
-
-  fv(document.getElementById('r-pod-tier'),tierBonusPodQ>0?-pTierPod:0);
+  var unitCost=pOrders>0?(pGmv*cogs/100/pOrders):0;
+  document.getElementById('r-pod-unitcost').textContent='¥'+unitCost.toFixed(1);
+  fv(document.getElementById('r-pod-tier'),pTierPod>0?-pTierPod:0);
   fv(document.getElementById('r-pod-net'),podNet);
-  const podRate=pGmv!==0?(podNetVal/pGmv*100):0;
+  var podRate=pGmv!==0?(podNet/pGmv*100):0;
   document.getElementById('r-pod-rate').textContent=(podRate>=0?'+':'')+podRate.toFixed(1)+'%';
   if(podRate<0)document.getElementById('r-pod-rate').classList.add('neg');else document.getElementById('r-pod-rate').classList.remove('neg');
-  fv(document.getElementById('r-pod-yr'),podNetVal*(12/(dayMult/30)));
-  document.getElementById('r-pod-unitcost').textContent='¥'+unitCost.toFixed(1);
-  document.getElementById('p-pod-net').textContent='净利润 '+fm(podNetVal);
+  fv(document.getElementById('r-pod-yr'),podNet*(12/(dayMult/30)));
+  document.getElementById('p-pod-net').textContent='净利润 '+fm(podNet);
 
-  // AI cost detail
+  // AI detail
   document.getElementById('lbl-ai-gens').textContent=periodName+'生图人次';
   document.getElementById('r-ai-gens').textContent=Math.round(pGens).toLocaleString();
   document.getElementById('r-ai-unit').textContent='¥'+aicost.toFixed(2);
   document.getElementById('lbl-ai-total').textContent=periodName+' AI 总成本';
   fv(document.getElementById('r-ai-total'),pAicost);
 
-  // 地推明细
-  fv(document.getElementById('r-sm-tier'),-pTierDi);
-  fv(document.getElementById('r-sm-express'),-expressCost);
-  // 动态地推费用行
-  let smHtml='';
-  if(costAlloc.cost==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val">${fm(-podCogs)}</span></div>`;
-  if(costAlloc.marketing==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val">${fm(-pMktCost)}</span></div>`;
-  if(costAlloc.posm==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：POSM费用</span><span class="fin-val">${fm(-posmCost)}</span></div>`;
-  if(costAlloc.ink==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val">${fm(-pInk)}</span></div>`;
-  if(costAlloc.material==='ditui')smHtml+=`<div class="fin-row" style="color:#E24B4A"><span>减：首批材料</span><span class="fin-val">${fm(-materialCost)}</span></div>`;
-  document.getElementById('r-sm-cost-rows').innerHTML=smHtml;
-  document.getElementById('lbl-sm-net').textContent='= '+periodName+'净利润';
-  fv(document.getElementById('r-sm-net'),pDiNet);
-  const rate=pGmv!==0?(pDiNet/pGmv*100):0;
-  document.getElementById('r-sm-rate').textContent=(rate>=0?'+':'')+rate.toFixed(1)+'%';
-  if(rate<0)document.getElementById('r-sm-rate').classList.add('neg');else document.getElementById('r-sm-rate').classList.remove('neg');
-  document.getElementById('lbl-sm-rate').textContent=periodName+'净利率';
-  fv(document.getElementById('r-sm-yr'),pDiNet*(12/(dayMult/30)));
-  document.getElementById('lbl-sm-yr').textContent='年化净利润';
-
   // investment
+  var netInvest=mprice*mcount-deposit*mcount;
   fv(document.getElementById('r-invest'),mprice*mcount);
   fv(document.getElementById('r-deposit'),deposit*mcount);
   fv(document.getElementById('r-netinvest'),netInvest);
 
   // expansion
-  const netQ=pDiNet; // 地推季度净利润
-  if(netQ>0){
-    const paybackQ=netInvest>0?Math.ceil(netInvest/netQ):0;
-    document.getElementById('r-payback').textContent=paybackQ?paybackQ+'个季度':'已回本';
-    document.getElementById('r-payback').classList.remove('neg');
-  }else{
-    document.getElementById('r-payback').textContent='未盈利';
-    document.getElementById('r-payback').classList.add('neg');
-  }
+  var netQ=pDiNet;
+  if(netQ>0){var pb=netInvest>0?Math.ceil(netInvest/netQ):0;document.getElementById('r-payback').textContent=pb?pb+'个季度':'已回本';document.getElementById('r-payback').classList.remove('neg');}
+  else{document.getElementById('r-payback').textContent='未盈利';document.getElementById('r-payback').classList.add('neg');}
   fv(document.getElementById('r-perunit'),mcount>0?netQ/mcount:0);
-  if(mcount>0&&netQ>0){
-    const newQ=Math.ceil((mprice-deposit)/netQ);
-    document.getElementById('r-newpayback').textContent=newQ+'个季度';
-    document.getElementById('r-newpayback').classList.remove('neg');
-  }else{
-    document.getElementById('r-newpayback').textContent='—';
-    document.getElementById('r-newpayback').classList.remove('neg');
-  }
+  if(mcount>0&&netQ>0){document.getElementById('r-newpayback').textContent=Math.ceil((mprice-deposit)/netQ)+'个季度';document.getElementById('r-newpayback').classList.remove('neg');}
+  else{document.getElementById('r-newpayback').textContent='—';document.getElementById('r-newpayback').classList.remove('neg');}
   fv(document.getElementById('r-recovered'),netQ*(runmonths/3));
 
   // loss alert
-  const lossEl=document.getElementById('loss-alert');
-  const netQForLoss=netQ;
-  if(netQForLoss>=0){
-    lossEl.innerHTML='<div class="alert ok">✅ 当前盈利，季度净利润 '+fm(netQForLoss)+'</div>';
-  }else{
-    const qToLimit=Math.ceil(losslimit/Math.abs(netQForLoss));
-    let cls='danger',msg='⚠️ 严重预警：仅 '+qToLimit+' 个季度即达亏损阈值 '+fm(losslimit);
-    if(qToLimit>=3&&qToLimit<=4){cls='warn';msg='⚡ 注意：'+qToLimit+' 个季度将达亏损阈值 '+fm(losslimit);}
-    if(qToLimit>=5){cls='info';msg='ℹ️ 距亏损阈值 '+fm(losslimit)+' 还有 '+qToLimit+' 个季度';}
-    lossEl.innerHTML='<div class="alert '+cls+'">'+msg+'<br>季度亏损 '+fm(netQForLoss)+'，已运行 '+runmonths+' 个月，累计亏损 '+fm(netQForLoss*(runmonths/3))+'</div>';
-  }
+  var lossEl=document.getElementById('loss-alert');
+  if(netQ>=0){lossEl.innerHTML='<div class="alert ok">✅ 当前盈利，季度净利润 '+fm(netQ)+'</div>';}
+  else{var ql=Math.ceil(losslimit/Math.abs(netQ));var cls='danger',msg='⚠️ 严重预警：仅 '+ql+' 个季度即达亏损阈值 '+fm(losslimit);if(ql>=3&&ql<=4){cls='warn';msg='⚡ 注意：'+ql+' 个季度将达亏损阈值 '+fm(losslimit);}if(ql>=5){cls='info';msg='ℹ️ 距亏损阈值 '+fm(losslimit)+' 还有 '+ql+' 个季度';}lossEl.innerHTML='<div class="alert '+cls+'">'+msg+'<br>季度亏损 '+fm(netQ)+'，已运行 '+runmonths+' 个月，累计亏损 '+fm(netQ*(runmonths/3))+'</div>';}
 
   // smart alerts
-  const alerts=[];
+  var alerts=[];
   if(podpct+dipct+opspct>100)alerts.push('<div class="alert danger">⚠️ 三方分成之和为 '+(podpct+dipct+opspct)+'%，超过100%，请调整</div>');
   if(pDiNet<0&&pDiGross>0)alerts.push('<div class="alert warn">⚡ '+periodName+'净利润为负('+fm(pDiNet)+')，但地推分成收入有 '+fm(pDiGross)+'，成本过高</div>');
   if(pDiNet>0&&mcount>1)alerts.push('<div class="alert ok">✅ '+mcount+'台机器'+periodName+'净利润 '+fm(pDiNet)+'，单台 '+fm(pDiNet/mcount)+'</div>');
-  if(tierResult.passed>0)alerts.push('<div class="alert info">📊 阶梯已触发 '+tierResult.passed+'/'+tierResult.total+' 档，本季奖励 '+fm(tierBonusQ)+'</div>');
+  if(tr.passed>0)alerts.push('<div class="alert info">📊 阶梯已触发 '+tr.passed+'/'+tr.total+' 档，本季奖励 '+fm(tr.bonus)+' (POD:'+fm(tr.podB)+' 地推:'+fm(tr.diB)+')</div>');
   document.getElementById('alert-box').innerHTML=alerts.join('');
 
   // tier info
-  const ti=document.getElementById('tier-info');
-  let tierHtml='预计当季阶梯奖励：'+fm(tierBonusQ)+'<br>';
-  if(tierResult.passed>0)tierHtml+='已触发 '+tierResult.passed+'/'+tierResult.total+' 档<br>';
-  else tierHtml+='尚未触发任何档位<br>';
-  if(tierResult.gap>0)tierHtml+='距下一档还差：'+fm(tierResult.gap);
-  else if(tierResult.passed>=tierResult.total)tierHtml+='已达到最高档位';
-  ti.innerHTML=tierHtml;
+  var ti=document.getElementById('tier-info');
+  var th='预计当季阶梯奖励：'+fm(tr.bonus)+' (POD:'+fm(tr.podB)+' 地推:'+fm(tr.diB)+')<br>';
+  if(tr.passed>0)th+='已触发 '+tr.passed+'/'+tr.total+' 档<br>';else th+='尚未触发任何档位<br>';
+  if(tr.gap>0)th+='距下一档还差：'+fm(tr.gap);else if(tr.passed>=tr.total)th+='已达到最高档位';
+  ti.innerHTML=th;
 }
 
-function renderCostAlloc(){
-  const box=document.getElementById('cost-alloc-box');
-  const items=[{key:'cost',name:'商品成本'},{key:'marketing',name:'营销推广'},{key:'posm',name:'POSM费用'},{key:'ink',name:'墨水耗材'},{key:'material',name:'首批材料'}];
-  let h='<div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:2px">费用归属</div>';
-  items.forEach(it=>{
-    const podActive=costAlloc[it.key]==='podpod'?'active':'';
-    const diActive=costAlloc[it.key]==='ditui'?'active':'';
-    h+=`<div class="ca-row"><span class="ca-name">${it.name}</span><button class="ca-btn ${podActive}" onclick="costAlloc['${it.key}']='podpod';renderCostAlloc();upd()">PODPOD</button><button class="ca-btn ${diActive}" onclick="costAlloc['${it.key}']='ditui';renderCostAlloc();upd()">地推</button></div>`;
-  });
-  box.innerHTML=h;
-}
-renderCostAlloc();
 renderTiers();
 upd();
-loadHist();
+renderHist();
 function exportPDF(){window.print();}
 </script>
 </body>
