@@ -294,7 +294,7 @@ function renderTiers(){
 function addTier(){
   if(tiers.length>=10)return;
   const last=tiers.length?Math.max(...tiers.map(t=>t.threshold)):0;
-  tiers.push({threshold:last+20000,rate:5});
+  tiers.push({threshold:last+20000,rate:5,podShare:20});
   tiers.sort((a,b)=>a.threshold-b.threshold);
   renderTiers();upd();
 }
@@ -323,7 +323,7 @@ function applySnap(snap){
   for(let k in snap){
     if(k==='tiers'){tiers=JSON.parse(JSON.stringify(snap.tiers));renderTiers();}
     else if(k==='tab'){tab=snap.tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));const tel=document.getElementById('tab-'+tab);if(tel)tel.classList.add('active');}
-    else if(k==='mode'){mode=snap[k];document.getElementById('mode-pod').classList.toggle('active',mode==='pod');document.getElementById('mode-di').classList.toggle('active',mode==='di');document.getElementById('v-mach-payer').textContent=mode==='pod'?'PODPOD':'地推';}
+    else if(k==='mode'){mode=snap[k];document.getElementById('mode-pod').classList.toggle('active',mode==='pod');document.getElementById('mode-di').classList.toggle('active',mode==='di');document.getElementById('v-mach-payer').textContent=mode==='pod'?'PODPOD':'地推';renderTiers();}
     else{const el=document.getElementById('s-'+k);if(el)el.value=snap[k];}
   }
   upd();
