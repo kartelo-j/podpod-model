@@ -303,12 +303,12 @@ function renderTiers(){
       <button class="tier-del" onclick="tiers.splice(${i},1);renderTiers();upd()" title="删除">×</button>
     </div>`).join('');
   document.querySelector('.tier-add').style.display=tiers.length>=10?'none':'';
-  tiers.forEach((t,i)=>{const el=document.getElementById('tier-di-share-'+i);if(el)el.textContent=(100-(t.podShare??20))+'%';});
+
 }
 function addTier(){
   if(tiers.length>=10)return;
   const last=tiers.length?Math.max(...tiers.map(t=>t.threshold)):0;
-  tiers.push({threshold:last+20000,rate:5,podShare:20});
+  tiers.push({threshold:last+20000,rate:5,podShare:0,diShare:0});
   tiers.sort((a,b)=>a.threshold-b.threshold);
   renderTiers();upd();
 }
@@ -438,7 +438,7 @@ function upd(){
   // split tier bonus by payer
   let tierBonusDiQ=0,tierBonusPodQ=0;
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=gmvQ*(hit.podShare??0)/100;tierBonusDiQ=gmvQ*(hit.diShare??0)/100;}
+  if(hit){const bonus=qGmv*hit.rate/100;tierBonusPodQ=bonus*(hit.podShare??0)/100;tierBonusDiQ=bonus*(hit.diShare??0)/100;}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
   const posmCost=posm;
