@@ -250,6 +250,8 @@ function setMode(m){
   document.getElementById('mode-di').classList.toggle('active',m==='di');
   document.getElementById('v-mach-payer').textContent=m==='pod'?'PODPOD':'地推';
   tiers.forEach(t=>t.payer=m);
+  if(m==='pod'){document.getElementById('s-podpct').value=40;document.getElementById('s-dipct').value=20;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='40%';document.getElementById('v-dipct').textContent='20%';document.getElementById('v-opspct').textContent='40%';}
+  else{document.getElementById('s-podpct').value=20;document.getElementById('s-dipct').value=40;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='20%';document.getElementById('v-dipct').textContent='40%';document.getElementById('v-opspct').textContent='40%';}
   document.getElementById('tier-payer-label').textContent=m==='pod'?'PODPOD':'地推';
   renderTiers();upd();
 }
