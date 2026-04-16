@@ -120,7 +120,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="sl-row"><span class="sl-label">运营方分成</span><input type="range" class="sl-blue" id="s-opspct" min="0" max="60" step="1" value="40" oninput="linkPct('ops',this.value)"><span class="sl-val" id="v-opspct">40%</span></div>
 
 <div class="divider" style="margin:14px 0"></div>
-<div style="font-size:12.5px;font-weight:600;margin-bottom:10px">阶梯奖励（季度 · 由<span id="tier-payer-label">PODPOD</span>额外给运营方）</div>
+<div style="font-size:12.5px;font-weight:600;margin-bottom:10px">阶梯奖励（季度 · PODPOD与地推联合给运营方）</div>
 <div id="tier-list"></div>
 <button class="tier-add" onclick="addTier()">+ 添加档位</button>
 <div class="tier-info" id="tier-info"></div>
@@ -168,7 +168,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="card">
 <div class="fin-row"><span id="lbl-sm-gmv">季度GMV</span><span class="fin-val" id="r-sm-gmv">—</span></div>
 <div class="fin-row"><span id="lbl-sm-div">地推分成(40%)</span><span class="fin-val" id="r-sm-div">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担）</span><span class="fin-val" id="r-sm-tier">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担部分）</span><span class="fin-val" id="r-sm-tier">—</span></div>
 <div class="fin-row" style="font-size:15px"><span id="lbl-sm-net">= 季度净利润</span><span class="fin-val" id="r-sm-net">—</span></div>
 <div class="fin-row"><span id="lbl-sm-rate">季净利率</span><span class="fin-val" id="r-sm-rate">—</span></div>
 <div class="fin-row"><span id="lbl-sm-yr">年化净利润</span><span class="fin-val" id="r-sm-yr">—</span></div>
@@ -196,10 +196,9 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="fin-row"><span>PODPOD 分成</span><span class="fin-val" id="r-pod-div">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：商品成本</span><span class="fin-val" id="r-pod-cogs">—</span></div>
 <div class="fin-row" style="color:#aaa;font-size:11px"><span>单件商品成本</span><span class="fin-val" id="r-pod-unitcost">—</span></div>
-<div class="fin-row" style="color:#E24B4A"><span>减：AI 生成成本</span><span class="fin-val" id="r-pod-ai">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val" id="r-pod-mkt">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val" id="r-pod-ink">—</span></div>
-<div class="fin-row" style="color:#E24B4A;display:none" id="row-pod-tier"><span>减：阶梯奖励（PODPOD承担）</span><span class="fin-val" id="r-pod-tier">—</span></div>
+<div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（PODPOD承担部分）</span><span class="fin-val" id="r-pod-tier">—</span></div>
 <div class="fin-row" style="font-size:15px"><span>= 季度净利润</span><span class="fin-val" id="r-pod-net">—</span></div>
 <div class="fin-row"><span>季净利率</span><span class="fin-val" id="r-pod-rate">—</span></div>
 <div class="fin-row"><span>年化净利润</span><span class="fin-val" id="r-pod-yr">—</span></div>
@@ -243,16 +242,14 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <script>
 let tab='quarter';
 let mode='pod';
-let tiers=[{threshold:65000,rate:5,payer:'pod'},{threshold:80000,rate:10,payer:'pod'},{threshold:95000,rate:15,payer:'pod'},{threshold:110000,rate:20,payer:'pod'},{threshold:125000,rate:25,payer:'pod'},{threshold:150000,rate:30,payer:'pod'}];
+let tiers=[{threshold:65000,rate:5,podShare:20},{threshold:80000,rate:10,podShare:20},{threshold:95000,rate:15,podShare:20},{threshold:110000,rate:20,podShare:20},{threshold:125000,rate:25,podShare:20},{threshold:150000,rate:30,podShare:20}];
 function setMode(m){
   mode=m;
   document.getElementById('mode-pod').classList.toggle('active',m==='pod');
   document.getElementById('mode-di').classList.toggle('active',m==='di');
   document.getElementById('v-mach-payer').textContent=m==='pod'?'PODPOD':'地推';
-  tiers.forEach(t=>t.payer=m);
   if(m==='pod'){document.getElementById('s-podpct').value=40;document.getElementById('s-dipct').value=20;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='40%';document.getElementById('v-dipct').textContent='20%';document.getElementById('v-opspct').textContent='40%';}
   else{document.getElementById('s-podpct').value=20;document.getElementById('s-dipct').value=40;document.getElementById('s-opspct').value=40;document.getElementById('v-podpct').textContent='20%';document.getElementById('v-dipct').textContent='40%';document.getElementById('v-opspct').textContent='40%';}
-  document.getElementById('tier-payer-label').textContent=m==='pod'?'PODPOD':'地推';
   renderTiers();upd();
 }
 function linkPct(changed,val){
@@ -288,10 +285,11 @@ function renderTiers(){
       <span style="font-size:12px;color:#555">奖励</span>
       <input type="number" value="${t.rate}" min="0" max="50" step="1" onchange="tiers[${i}].rate=+this.value;upd()">
       <span style="font-size:12px;color:#555">%</span>
-      <select style="padding:4px 6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;outline:none" onchange="tiers[${i}].payer=this.value;upd()"><option value="di"${t.payer==='di'?' selected':''}>地推</option><option value="pod"${t.payer==='pod'?' selected':''}>PODPOD</option></select>
+      <span style="font-size:11px;color:#888">POD</span><input type="number" value="${t.podShare||20}" min="0" max="100" step="5" style="width:52px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;upd()"><span style="font-size:11px;color:#888">%</span><span style="font-size:11px;color:#888">地推</span><span style="font-size:12px;color:#555;font-weight:600" id="tier-di-share-${i}">${100-(t.podShare||20)}%</span>
       <button class="tier-del" onclick="tiers.splice(${i},1);renderTiers();upd()" title="删除">×</button>
     </div>`).join('');
   document.querySelector('.tier-add').style.display=tiers.length>=10?'none':'';
+  tiers.forEach((t,i)=>{const el=document.getElementById('tier-di-share-'+i);if(el)el.textContent=(100-(t.podShare||20))+'%';});
 }
 function addTier(){
   if(tiers.length>=10)return;
@@ -419,7 +417,7 @@ function upd(){
   // split tier bonus by payer
   let tierBonusDiQ=0,tierBonusPodQ=0;
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;tierBonusDiQ=hit.payer==='di'?bonus:0;tierBonusPodQ=hit.payer==='pod'?bonus:0;}}
+  if(hit){const bonus=qGmv*hit.rate/100;const ps=hit.podShare||20;tierBonusPodQ=bonus*ps/100;tierBonusDiQ=bonus*(100-ps)/100;}}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
 
@@ -442,7 +440,7 @@ function upd(){
 
   const pOpsTotal=pGmv*opspct/100+pTierDi+pTierPod;
   const pPodTotal=podDiv;
-  const podNet=podDiv-podCogs-pAicost-pMktCost-pInk-pTierPod;
+  const podNet=podDiv-podCogs-pMktCost-pInk-pTierPod;
   const netInvest=mprice*mcount-deposit*mcount;
 
   // update labels
@@ -492,11 +490,10 @@ function upd(){
   fv(document.getElementById('r-pod-div'),podDiv);
   fv(document.getElementById('r-pod-cogs'),-podCogs);
   const unitCost=pOrders>0?(pGmv*cogs/100/pOrders):0;
-  fv(document.getElementById('r-pod-ai'),-pAicost);
+
   fv(document.getElementById('r-pod-mkt'),-pMktCost);
   fv(document.getElementById('r-pod-ink'),-pInk);
-  const podTierRow=document.getElementById('row-pod-tier');
-  if(tierBonusPodQ>0){podTierRow.style.display='';fv(document.getElementById('r-pod-tier'),-pTierPod);}else{podTierRow.style.display='none';}
+  if(tierBonusPodQ>0){fv(document.getElementById('r-pod-tier'),-pTierPod);}
   fv(document.getElementById('r-pod-net'),podNet);
   const podRate=pGmv!==0?(podNet/pGmv*100):0;
   document.getElementById('r-pod-rate').textContent=(podRate>=0?'+':'')+podRate.toFixed(1)+'%';
