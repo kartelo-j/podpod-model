@@ -162,7 +162,6 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="fin-row"><span id="lbl-sm-gmv">季度GMV</span><span class="fin-val" id="r-sm-gmv">—</span></div>
 <div class="fin-row"><span id="lbl-sm-div">地推分成(40%)</span><span class="fin-val" id="r-sm-div">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：阶梯奖励（地推承担）</span><span class="fin-val" id="r-sm-tier">—</span></div>
-<div class="fin-row" style="color:#E24B4A;display:none" id="row-sm-mach"><span>减：机器折旧</span><span class="fin-val" id="r-sm-mach">—</span></div>
 <div class="fin-row" style="font-size:15px"><span id="lbl-sm-net">= 季度净利润</span><span class="fin-val" id="r-sm-net">—</span></div>
 <div class="fin-row"><span id="lbl-sm-rate">季净利率</span><span class="fin-val" id="r-sm-rate">—</span></div>
 <div class="fin-row"><span id="lbl-sm-yr">年化净利润</span><span class="fin-val" id="r-sm-yr">—</span></div>
@@ -194,7 +193,6 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 <div class="fin-row" style="color:#E24B4A"><span>减：营销推广</span><span class="fin-val" id="r-pod-mkt">—</span></div>
 <div class="fin-row" style="color:#E24B4A"><span>减：墨水耗材</span><span class="fin-val" id="r-pod-ink">—</span></div>
 <div class="fin-row" style="color:#E24B4A;display:none" id="row-pod-tier"><span>减：阶梯奖励（PODPOD承担）</span><span class="fin-val" id="r-pod-tier">—</span></div>
-<div class="fin-row" style="color:#E24B4A;display:none" id="row-pod-mach"><span>减：机器折旧</span><span class="fin-val" id="r-pod-mach">—</span></div>
 <div class="fin-row" style="font-size:15px"><span>= 季度净利润</span><span class="fin-val" id="r-pod-net">—</span></div>
 <div class="fin-row"><span>季净利率</span><span class="fin-val" id="r-pod-rate">—</span></div>
 <div class="fin-row"><span>年化净利润</span><span class="fin-val" id="r-pod-yr">—</span></div>
@@ -409,7 +407,6 @@ function upd(){
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
   if(hit){const bonus=qGmv*hit.rate/100;tierBonusDiQ=hit.payer==='di'?bonus:0;tierBonusPodQ=hit.payer==='pod'?bonus:0;}}
   const machTotal=mprice*mcount;
-  const machDepQ=machTotal/24;
   const inkQ=ink*3;
 
   // period values
@@ -423,15 +420,15 @@ function upd(){
   const qMult=dayMult===90?1:(dayMult===30?0:4);
   const pTierDi=tierBonusDiQ*qMult;
   const pTierPod=tierBonusPodQ*qMult;
-  const pMachDep=machDepQ*qMult;
+
   const pInk=inkQ*qMult;
   const podDiv=pGmv*podpct/100;
   const podCogs=pGmv*cogs/100;
-  const pDiNet=pDiGross-pTierDi-(machPayer==='di'?pMachDep:0);
+  const pDiNet=pDiGross-pTierDi;
 
   const pOpsTotal=pGmv*opspct/100+pTierDi+pTierPod;
   const pPodTotal=podDiv;
-  const podNet=podDiv-podCogs-pAicost-pMktCost-pInk-pTierPod-(machPayer==='pod'?pMachDep:0);
+  const podNet=podDiv-podCogs-pAicost-pMktCost-pInk-pTierPod;
   const netInvest=mprice*mcount-deposit*mcount;
 
   // update labels
@@ -486,8 +483,6 @@ function upd(){
   fv(document.getElementById('r-pod-ink'),-pInk);
   const podTierRow=document.getElementById('row-pod-tier');
   if(tierBonusPodQ>0){podTierRow.style.display='';fv(document.getElementById('r-pod-tier'),-pTierPod);}else{podTierRow.style.display='none';}
-  const podMachRow=document.getElementById('row-pod-mach');
-  if(machPayer==='pod'){podMachRow.style.display='';fv(document.getElementById('r-pod-mach'),-pMachDep);}else{podMachRow.style.display='none';}
   fv(document.getElementById('r-pod-net'),podNet);
   const podRate=pGmv!==0?(podNet/pGmv*100):0;
   document.getElementById('r-pod-rate').textContent=(podRate>=0?'+':'')+podRate.toFixed(1)+'%';
@@ -505,8 +500,6 @@ function upd(){
 
   // 地推明细
   fv(document.getElementById('r-sm-tier'),-pTierDi);
-  const machRowSm=document.getElementById('row-sm-mach');
-  if(machPayer==='di'){machRowSm.style.display='';fv(document.getElementById('r-sm-mach'),-pMachDep);}else{machRowSm.style.display='none';}
   document.getElementById('lbl-sm-net').textContent='= '+periodName+'净利润';
   fv(document.getElementById('r-sm-net'),pDiNet);
   const rate=pGmv!==0?(pDiNet/pGmv*100):0;
