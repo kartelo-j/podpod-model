@@ -285,11 +285,11 @@ function renderTiers(){
       <span style="font-size:12px;color:#555">奖励</span>
       <input type="number" value="${t.rate}" min="0" max="50" step="1" onchange="tiers[${i}].rate=+this.value;upd()">
       <span style="font-size:12px;color:#555">%</span>
-      <span style="font-size:11px;color:#888">POD</span><input type="number" value="${t.podShare||20}" min="0" max="100" step="5" style="width:52px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;renderTiers();upd()"><span style="font-size:11px;color:#888">%</span><span style="font-size:11px;color:#888">地推</span><span style="font-size:12px;color:#555;font-weight:600" id="tier-di-share-${i}">${100-(t.podShare||20)}%</span>
+      <span style="font-size:11px;color:#888">POD</span><input type="number" value="${t.podShare??20}" min="0" max="100" step="5" style="width:52px;padding:4px 4px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;text-align:center;outline:none" onchange="tiers[${i}].podShare=+this.value;renderTiers();upd()"><span style="font-size:11px;color:#888">%</span><span style="font-size:11px;color:#888">地推</span><span style="font-size:12px;color:#555;font-weight:600" id="tier-di-share-${i}">${100-(t.podShare??20)}%</span>
       <button class="tier-del" onclick="tiers.splice(${i},1);renderTiers();upd()" title="删除">×</button>
     </div>`).join('');
   document.querySelector('.tier-add').style.display=tiers.length>=10?'none':'';
-  tiers.forEach((t,i)=>{const el=document.getElementById('tier-di-share-'+i);if(el)el.textContent=(100-(t.podShare||20))+'%';});
+  tiers.forEach((t,i)=>{const el=document.getElementById('tier-di-share-'+i);if(el)el.textContent=(100-(t.podShare??20))+'%';});
 }
 function addTier(){
   if(tiers.length>=10)return;
@@ -417,7 +417,7 @@ function upd(){
   // split tier bonus by payer
   let tierBonusDiQ=0,tierBonusPodQ=0;
   {const sorted=[...tiers].sort((a,b)=>a.threshold-b.threshold);let hit=null;for(let t of sorted){if(qGmv>=t.threshold)hit=t;}
-  if(hit){const bonus=qGmv*hit.rate/100;const ps=hit.podShare||20;tierBonusPodQ=bonus*ps/100;tierBonusDiQ=bonus*(100-ps)/100;}}
+  if(hit){const bonus=qGmv*hit.rate/100;const ps=hit.podShare??20;tierBonusPodQ=bonus*ps/100;tierBonusDiQ=bonus*(100-ps)/100;}}
   const machTotal=mprice*mcount;
   const inkQ=ink*3;
 
