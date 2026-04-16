@@ -253,7 +253,7 @@ input[type=range].sl-blue::-moz-range-thumb{background:#378ADD}
 let tab='quarter';
 let mode='pod';
 let costOwner='podpod';
-let tiers=[{threshold:65000,rate:5,podShare:0,diShare:0},{threshold:80000,rate:10,podShare:0,diShare:0},{threshold:95000,rate:15,podShare:0,diShare:0},{threshold:110000,rate:20,podShare:0,diShare:0},{threshold:125000,rate:25,podShare:0,diShare:0},{threshold:150000,rate:30,podShare:0,diShare:0}];
+let tiers=[{threshold:65000,podShare:5,diShare:0},{threshold:80000,podShare:10,diShare:0},{threshold:95000,podShare:15,diShare:0},{threshold:110000,podShare:20,diShare:0},{threshold:125000,podShare:25,diShare:0},{threshold:150000,podShare:30,diShare:0}];
 
 function setMode(m){
   mode=m;
@@ -299,14 +299,11 @@ function renderTiers(){
       +'<span style="font-size:12px;color:#888;width:30px">'+(i+1)+'</span>'
       +'<span style="font-size:11px;color:#555">GMV≥</span>'
       +'<input type="number" value="'+t.threshold+'" min="10000" step="10000" onchange="tiers['+i+'].threshold=+this.value;tiers.sort(function(a,b){return a.threshold-b.threshold});renderTiers();upd()">'
-      +'<span style="font-size:11px;color:#555">奖励</span>'
-      +'<input type="number" value="'+(t.rate||0)+'" min="0" max="50" step="1" style="width:40px" onchange="tiers['+i+'].rate=+this.value;upd()">'
+      +'<span style="font-size:11px;color:#555">POD出</span>'
+      +'<input type="number" value="'+(t.podShare||0)+'" min="0" max="50" step="1" style="width:44px" onchange="tiers['+i+'].podShare=+this.value;upd()">'
       +'<span style="font-size:11px;color:#555">%</span>'
-      +'<span style="font-size:11px;color:#888;margin-left:4px">POD</span>'
-      +'<input type="number" value="'+(t.podShare||0)+'" min="0" max="100" step="1" style="width:40px" onchange="tiers['+i+'].podShare=+this.value;upd()">'
-      +'<span style="font-size:11px;color:#555">%</span>'
-      +'<span style="font-size:11px;color:#888;margin-left:4px">地推</span>'
-      +'<input type="number" value="'+(t.diShare||0)+'" min="0" max="100" step="1" style="width:40px" onchange="tiers['+i+'].diShare=+this.value;upd()">'
+      +'<span style="font-size:11px;color:#555">地推出</span>'
+      +'<input type="number" value="'+(t.diShare||0)+'" min="0" max="50" step="1" style="width:44px" onchange="tiers['+i+'].diShare=+this.value;upd()">'
       +'<span style="font-size:11px;color:#555">%</span>'
       +'<button class="tier-del" onclick="tiers.splice('+i+',1);renderTiers();upd()">×</button>'
       +'</div>';
@@ -316,7 +313,7 @@ function renderTiers(){
 function addTier(){
   if(tiers.length>=10)return;
   var last=tiers.length?Math.max.apply(null,tiers.map(function(t){return t.threshold})):0;
-  tiers.push({threshold:last+20000,rate:5,podShare:0,diShare:0});
+  tiers.push({threshold:last+20000,podShare:0,diShare:0});
   tiers.sort(function(a,b){return a.threshold-b.threshold});
   renderTiers();upd();
 }
@@ -326,9 +323,9 @@ function calcTier(gmvQ){
   var hit=null;
   for(var i=0;i<sorted.length;i++){if(gmvQ>=sorted[i].threshold)hit=sorted[i];}
   if(!hit)return{bonus:0,passed:0,total:sorted.length,gap:sorted[0].threshold-gmvQ};
-  var totalB=gmvQ*(hit.rate||0)/100;
-  var podB=totalB*(hit.podShare||0)/100;
-  var diB=totalB*(hit.diShare||0)/100;
+  var podB=gmvQ*(hit.podShare||0)/100;
+  var diB=gmvQ*(hit.diShare||0)/100;
+  var bonus=podB+diB;
   var bonus=podB+diB;
   var passedIdx=sorted.indexOf(hit)+1;
   var nextTier=sorted[passedIdx];
