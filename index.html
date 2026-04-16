@@ -442,10 +442,9 @@ function upd(){
   const inkQ=ink*3;
   const posmP=posm/(tab==='month'?12:tab==='quarter'?4:1);
   const materialP=material/(tab==='month'?12:tab==='quarter'?4:1);
-  const expressCost=express*pOrders;
-
   // period values
   const pOrders=mOrders*dayMult;
+  const expressCost=express*pOrders;
   const pGmv=mGmv*dayMult;
   const pGens=mGens*dayMult;
   const pAicost=mAicost*dayMult;
